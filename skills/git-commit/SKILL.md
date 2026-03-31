@@ -9,11 +9,13 @@ Help the user create clear, meaningful commits. The goal is to capture *why* a c
 
 ## Workflow
 
-1. **Check staged files** — run `git status` to see what's staged and unstaged
-2. **Auto-stage if nothing staged** — if 0 files are staged, run `git add` on all modified/new files
-3. **Understand the changes** — run `git diff --staged` (or `git diff HEAD` if nothing staged yet) to read what actually changed
-4. **Suggest a commit message** — show the user your proposed message and let them confirm or edit before committing
-5. **Commit** — once approved, run the commit
+1. **Fetch from remote** — run `git fetch` to get the latest remote state without merging
+2. **Check for upstream commits** — run `git log HEAD..@{u} --oneline` to see if the remote has commits the local branch doesn't. If any commits are found, **stop immediately** and tell the user to pull before committing (e.g. "There are N new commit(s) on the remote. Please run `git pull` before committing.")
+3. **Check staged files** — run `git status` to see what's staged and unstaged
+4. **Auto-stage if nothing staged** — if 0 files are staged, run `git add` on all modified/new files
+5. **Understand the changes** — run `git diff --staged` (or `git diff HEAD` if nothing staged yet) to read what actually changed
+6. **Suggest a commit message** — show the user your proposed message and let them confirm or edit before committing
+7. **Commit** — once approved, run the commit
 
 ## Commit Message Format
 
