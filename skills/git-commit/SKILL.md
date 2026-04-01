@@ -1,21 +1,22 @@
 ---
 name: git-commit
-description: Use this skill whenever the user wants to commit changes, write a commit message, stage and commit files, or asks what to write for a git commit. Triggers on phrases like "commit", "write a commit", "commit message", "stage and commit", "what should I commit", "help me commit". Always use this skill before running any git commit command.
+description: Use this skill whenever the user wants to commit changes, write a commit message, stage and commit files, or asks what to write for a git commit. Triggers on phrases like "commit", "write a commit", "commit message", "stage and commit", "what should I commit", "help me commit", "push my changes", or "save my progress to git". Always use this skill before running any git commit command — even if the request seems simple, using this skill ensures meaningful, well-structured commits every time.
 ---
 
 # Git Commit Skill
 
-Help the user create clear, meaningful commits. The goal is to capture *why* a change was made — not just what files changed.
+Help the user create clear, meaningful commits. The goal is to capture *why* a change was made — not just what files changed. A good commit message lets someone reading the history 6 months from now instantly understand the intent without digging through the diff.
 
 ## Workflow
 
-1. **Fetch from remote** — run `git fetch` to get the latest remote state without merging
-2. **Check for upstream commits** — run `git log HEAD..@{u} --oneline` to see if the remote has commits the local branch doesn't. If any commits are found, **stop immediately** and tell the user to pull before committing (e.g. "There are N new commit(s) on the remote. Please run `git pull` before committing.")
-3. **Check staged files** — run `git status` to see what's staged and unstaged
-4. **Auto-stage if nothing staged** — if 0 files are staged, run `git add` on all modified/new files
-5. **Understand the changes** — run `git diff --staged` (or `git diff HEAD` if nothing staged yet) to read what actually changed
-6. **Suggest a commit message** — show the user your proposed message and let them confirm or edit before committing
-7. **Commit** — once approved, run the commit
+1. **Fetch from remote** — run `git fetch` to get the latest remote state without merging.
+2. **Check for upstream commits** — run `git log HEAD..@{u} --oneline` to see if the remote has commits the local branch doesn't. If any exist, stop and tell the user to pull first (e.g. *"There are N new commit(s) on the remote. Please run `git pull` before committing."*)
+3. **Check staged files** — run `git status` to see what's staged and unstaged.
+4. **Auto-stage if nothing staged** — if no files are staged, run `git add` on all modified/new files.
+5. **Understand the changes** — run `git diff --staged` (or `git diff HEAD` if nothing is staged yet) to read what actually changed.
+6. **Clarify intent if needed** — if the diff alone doesn't make the *purpose* of the changes clear, ask the user before proposing a message. Guessing a message that merely sounds related to the diff leads to noise in the git history. A simple *"What was the goal of these changes?"* is better than a wrong commit.
+7. **Propose a commit message** — show the user your proposed message (type + description + optional body/footer) and let them confirm or edit before running the commit.
+8. **Commit** — once the user confirms, run the commit.
 
 ## Commit Message Format
 
@@ -47,19 +48,19 @@ Required. Must be one of:
 
 ### Scope (optional)
 
-A noun in parentheses describing the section of codebase affected: `feat(auth):`, `fix(parser):`, `chore(deps):`.
+A noun in parentheses describing the section of the codebase affected: `feat(auth):`, `fix(parser):`, `chore(deps):`. Use it when the change is clearly scoped to one area and the scope adds meaningful signal.
 
 ### Description
 
-Short summary immediately after the colon and space. Imperative mood, no period at end, under 72 chars total for the first line. Describes *why*, not just what the diff shows.
+Short summary immediately after the colon and space. Use imperative mood ("fix", "add", "remove" — not "fixed" or "adds"), no period at the end, keep the full first line under 72 characters. Describe *why*, not just what the diff shows.
 
-### Body (optional)
+### Body (when to use)
 
-Separated from the description by a blank line. Free-form, use to explain motivation and contrast with previous behavior. Wrap at ~72 chars.
+Add a body when the description line alone wouldn't give a future reader enough context — e.g., when you're explaining a tradeoff, a non-obvious fix, or a change in behavior. Separate from the description with a blank line and wrap lines at ~72 characters.
 
-### Footers (optional)
+### Footers (when to use)
 
-Separated from the body (or description) by a blank line. Each footer is a token + `: ` or ` #` + value, following git trailer format (use `-` instead of spaces in token names, e.g. `Reviewed-by:`).
+Add footers for cross-references or review metadata: `Refs: #123`, `Reviewed-by: Alice`, `Closes: #45`. Separate from the body (or description) with a blank line. Use `-` instead of spaces in multi-word tokens (`Reviewed-by:`, not `Reviewed by:`).
 
 ## Breaking Changes
 
@@ -108,9 +109,13 @@ BREAKING CHANGE: uses optional chaining and nullish coalescing
 which require Node 16+
 ```
 
+**When to ask instead of guess:**
+
+If the diff shows something like a config file with a handful of value changes, but it's not obvious *why* those values changed, ask: *"What prompted these config changes?"* This keeps the history meaningful and avoids commits like `chore: update config` that tell future readers nothing.
+
 ## Splitting Commits
 
-If the diff mixes unrelated concerns, suggest splitting into separate commits — easier to review, revert, and understand in `git log`.
+If the diff mixes unrelated concerns, suggest splitting into separate commits — they're easier to review, revert, and understand in `git log`.
 
 Split when you see:
 - Different types mixed (feat + fix, chore + refactor)
@@ -119,7 +124,8 @@ Split when you see:
 
 ## Notes
 
-- If specific files are already staged, commit only those
-- **Never add AI attribution to commit messages.** Do not include `Co-Authored-By: Claude`, `Generated with Claude Code`, or any other AI-related footer, trailer, or mention — in any form. The commit message must contain only the actual change description and relevant human context.
-- Always show the proposed message to the user before committing — they may know context you don't
-- `BREAKING CHANGE` in a footer must be uppercase
+- If specific files are already staged, commit only those.
+- Never add AI attribution to commit messages — no `Co-Authored-By: Claude`, `Generated with Claude Code`, or any AI-related mention in any form. The message should contain only the actual change description and relevant human context.
+- Always show the proposed message to the user before committing — they may know context you don't.
+- `BREAKING CHANGE` in a footer must be uppercase.
+- If you're not confident about the intent behind the changes, ask the user. Don't fabricate a plausible-sounding message — a short clarifying question is always better than a commit that misleads the history.
