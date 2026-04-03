@@ -12,8 +12,8 @@ Help the user create clear, meaningful commits. The goal is to capture *why* a c
 1. **Fetch from remote** — run `git fetch` to get the latest remote state without merging.
 2. **Check for upstream commits** — run `git log HEAD..@{u} --oneline` to see if the remote has commits the local branch doesn't. If any exist, stop and tell the user to pull first (e.g. *"There are N new commit(s) on the remote. Please run `git pull` before committing."*)
 3. **Check staged files** — run `git status` to see what's staged and unstaged.
-4. **Auto-stage if nothing staged** — if no files are staged, run `git add` on all modified/new files.
-5. **Understand the changes** — run `git diff --staged` (or `git diff HEAD` if nothing is staged yet) to read what actually changed.
+4. **Require staged files** — if no files are staged, ask the user to stage files before continuing. Do not automatically stage files.
+5. **Understand the changes** — run `git diff --staged` to read what actually changed.
 6. **Clarify intent if needed** — if the diff alone doesn't make the *purpose* of the changes clear, ask the user before proposing a message. Guessing a message that merely sounds related to the diff leads to noise in the git history. A simple *"What was the goal of these changes?"* is better than a wrong commit.
 7. **Propose a commit message** — show the user your proposed message (type + description + optional body/footer) and let them confirm or edit before running the commit.
 8. **Commit** — once the user confirms, run the commit.
