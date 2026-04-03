@@ -1,7 +1,6 @@
 ---
 name: git-commit
 description: Use this skill whenever the user wants to commit changes, write a commit message, stage and commit files, or asks what to write for a git commit. Triggers on phrases like "commit", "write a commit", "commit message", "stage and commit", "what should I commit", "help me commit", "push my changes", or "save my progress to git". Always use this skill before running any git commit command — even if the request seems simple, using this skill ensures meaningful, well-structured commits every time.
-model: haiku
 ---
 
 # Git Commit Skill
