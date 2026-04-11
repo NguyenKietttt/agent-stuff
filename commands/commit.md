@@ -1,6 +1,9 @@
 ---
-description: Stage and commit with a conventional commit message
+description: Create a commit message by analyzing git diffs
 ---
+
+## Your task
+Propose a conventional commit message based on the following context.
 
 ## Workflow
 1. Run `git status` to check staged files
@@ -11,16 +14,15 @@ description: Stage and commit with a conventional commit message
 
 ## Commit Format
 ```
-<type>[<scope>]: <description>
+<type><optional_scope>: <concise_description>
+<optional_body_explaining_why>
 ```
 
 ## Types
-feat, fix, refactor, chore, docs, style, test, perf, ci, build, revert
+feat, fix, refactor, chore, docs, style, test, perf, ci
 
 ## Rules
 - Never add AI attribution (no Co-Authored-By, etc.)
 - Never auto-stage files — always ask the user to stage first
-- Use imperative mood ("add" not "added")
-- Keep first line under 72 chars
 - Describe *why* not just what changed
-- Breaking changes: add `!` after type/scope OR add `BREAKING CHANGE:` footer
+- Use imperative mood ("add" not "added")
