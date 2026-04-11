@@ -18,9 +18,9 @@ description: Stage and commit with a conventional commit message
 feat, fix, refactor, chore, docs, style, test, perf, ci, build, revert
 
 ## Rules
+- Never add AI attribution (no Co-Authored-By, etc.)
 - Never auto-stage files — always ask the user to stage first
 - Use imperative mood ("add" not "added")
 - Keep first line under 72 chars
 - Describe *why* not just what changed
 - Breaking changes: add `!` after type/scope OR add `BREAKING CHANGE:` footer
-- Never add AI attribution (no Co-Authored-By, etc.)
