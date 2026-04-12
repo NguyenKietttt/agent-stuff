@@ -13,7 +13,7 @@ A skill for generating high-quality, conventional commit messages based on stage
 2.  **Verify Staging**: If no files are staged, inform the user and ask them to stage the files they want to commit before proceeding.
 3.  **Review Changes**: Run `git diff --staged` to review the code changes. Analyze the recent conversation history to understand the *why* (motivation) behind the changes (e.g., bug reports, feature requests, rationale discussed).
 4.  **Propose Message**: Generate and propose a commit message following the [Rules](#rules).
-5.  **Confirm and Commit**: Wait for the user to confirm the proposed message. Once confirmed, run `git commit -m "<proposed-message>"`.
+5.  **Confirm and Commit**: Wait for the user to confirm the proposed message or provide an updated one. Once confirmed or updated, run `git commit -m "<final-message>"`.
 
 ## Rules
 
