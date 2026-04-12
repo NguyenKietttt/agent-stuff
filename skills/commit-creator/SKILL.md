@@ -29,7 +29,7 @@ A skill for generating high-quality, conventional commit messages based on stage
 - Skip entirely when subject is self-explanatory
 - Add body only for: non-obvious *why*, breaking changes, migration notes, linked issues
 - Wrap at 72 chars
-- Bullets `-` not `*`
+- If the body describes multiple changes, use a bulleted list with `-` instead of grouping them into a single paragraph.
 
 **What NEVER goes in:**
 - "This commit does X", "I", "we", "now", "currently" — the diff says what
@@ -57,6 +57,22 @@ Diff: breaking API change
 
   BREAKING CHANGE: clients on /v1/orders must migrate to /v1/checkout
   before 2026-06-01. Old route returns 410 after that date.
+  ```
+
+Diff: multiple changes in one commit
+- ❌
+  ```
+  refactor(auth): update authentication flow
+
+  Migrated to new JWT library, removed deprecated OAuth 1.0 support, and updated error handling for token expiration.
+  ```
+- ✅
+  ```
+  refactor(auth): update authentication flow
+
+  - Migrate to new JWT library
+  - Remove deprecated OAuth 1.0 support
+  - Update error handling for token expiration
   ```
 
 ## Auto-Clarity
