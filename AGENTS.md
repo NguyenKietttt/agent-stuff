@@ -1,2 +1,2 @@
 ## Always active skills
-@./skills/simple-caveman/SKILL.md
+@./skills/caveman/SKILL.md
