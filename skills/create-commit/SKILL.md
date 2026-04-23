@@ -1,16 +1,14 @@
 ---
-name: commit-creator
+name: create-commit
 description: Propose a conventional commit message by analyzing git diffs. Trigger whenever the user mentions "commit", "git commit", "create a commit message", or wants to save changes to the repository.
 ---
-
-# Commit Creator
 
 A skill for generating high-quality, conventional commit messages based on staged changes.
 
 ## Workflow
 
 1.  **Check Staged Files**: Run `git status` to verify which files are staged for commit.
-2.  **Verify Staging**: If no files are staged, inform the user and ask them to stage the files they want to commit before proceeding.
+2.  **Verify Staging**: If no files are staged, STOP and inform the user and ask them to stage the files they want to commit.
 3.  **Review Changes**: Run `git diff --staged` to review the code changes. Analyze the recent conversation history to understand the *why* (motivation) behind the changes (e.g., bug reports, feature requests, rationale discussed).
 4.  **Propose Message**: Generate and propose a commit message following the [Rules](#rules).
 5.  **Confirm and Commit**: Wait for the user to confirm the proposed message or provide an updated one. Once confirmed or updated, run `git commit -m "<final-message>"`.
