@@ -47,7 +47,7 @@ Ask the user:
 
 Iterate until the user approves the breakdown.
 
-### 5. Create the GitHub issues
+### 5. Create the issues
 
 For each approved slice, write an issue and save it to ./agents/prd/<folder-contain-prd>/issues/<ISSUE-NUMBER>.md. Use the issue body template below.
 
