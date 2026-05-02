@@ -8,3 +8,8 @@ Interview me relentlessly about every aspect of this plan until we reach a share
 Ask the questions one at a time.
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
+
+After all questions have been asked and answered:
+1. Summarize all questions and the user's corresponding decisions into a clear table.
+2. Present this summary to the user, then explicitly ask what they want to do next.
+3. Do NOT implement, modify code, or take any other action without the user's explicit request and confirmation.
