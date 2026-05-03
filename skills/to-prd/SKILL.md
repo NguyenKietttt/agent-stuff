@@ -9,11 +9,11 @@ This skill takes the current conversation context and codebase understanding and
 
 1. Explore the repo to understand the current state of the codebase, if you haven't already.
 
-2. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
+2. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be verified through manual testing.
 
 A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes.
 
-Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
+Check with the user that these modules match their expectations. Check with the user which modules they want manual tests created for.
 
 3. Write the PRD using the template below and save it to .agents/prd/<concise-description-of-prd>/<PRD>.md
 
@@ -57,9 +57,10 @@ Do NOT include specific file paths or code snippets. They may end up being outda
 
 A list of testing decisions that were made. Include:
 
-- A description of what makes a good test (only test external behavior, not implementation details)
-- Which modules will be tested
-- Prior art for the tests (i.e. similar types of tests in the codebase)
+- A description of what makes a good manual test (focus on user workflows, edge cases, and real-world scenarios)
+- Which modules or features will have manual tests created
+- Test scenarios that cover critical user paths and edge cases
+- Any reference to existing manual test procedures or checklists in the project
 
 ## Out of Scope
 

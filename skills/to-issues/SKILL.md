@@ -24,8 +24,8 @@ Break the plan into **tracer bullet** issues. Each issue is a thin vertical slic
 Slices may be 'HITL' or 'AFK'. HITL slices require human interaction, such as an architectural decision or a design review. AFK slices can be implemented and merged without human interaction. Prefer AFK over HITL where possible.
 
 <vertical-slice-rules>
-- Each slice delivers a narrow but COMPLETE path through every layer (schema, API, UI, tests)
-- A completed slice is demoable or verifiable on its own
+- Each slice delivers a narrow but COMPLETE path through every layer (schema, API, UI)
+- A completed slice is demoable and manually verifiable on its own
 - Prefer many thin slices over few thick ones
 </vertical-slice-rules>
 
@@ -68,6 +68,15 @@ A concise description of this vertical slice. Describe the end-to-end behavior, 
 - Criterion 1
 - Criterion 2
 - Criterion 3
+
+## Manual Testing
+
+Describe the manual testing steps to verify this slice works correctly:
+
+- Test step 1: Expected behavior
+- Test step 2: Expected behavior
+- Edge cases to verify
+- User workflows to test
 
 ## Blocked by
 
