@@ -1,118 +1,47 @@
-/**
- * Footer Pipes Extension
- *
- * Replaces the built-in footer with "|" separators between elements for better readability.
- * Auto-enabled on every session start.
- *
- * Install: already placed in ~/.pi/agent/extensions/footer-pipes/index.ts
- * Run `/reload` in pi to activate.
- */
-
-import type { AssistantMessage } from "@mariozechner/pi-ai";
-import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
 
-// Track thinking level manually since ctx.getThinkingLevel() may not be available
+// Track thinking level across renders
 let currentThinkingLevel = "off";
 
-export default function (pi: ExtensionAPI) {
-  // Auto-enable on session start
-  pi.on("session_start", async (_event, ctx) => {
-    currentThinkingLevel = pi.getThinkingLevel?.() ?? "off";
-    applyCustomFooter(ctx);
-  });
+// Format context window size (e.g., 200k, 1M)
+const fmtContext = (n: number) =>
+  n >= 1000000
+    ? `${(n / 1000000).toFixed(n >= 10000000 ? 0 : 1).replace(/\.0$/, '')}M`
+    : n >= 1000
+      ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, '')}K`
+      : `${n}`;
 
-  // Track thinking level changes
-  pi.on("thinking_level_select", async (event) => {
+export default function (pi: ExtensionAPI) {
+  // Listen for thinking level changes
+  pi.on("thinking_level_select", async (event, _ctx) => {
     currentThinkingLevel = event.level;
   });
-}
 
-function applyCustomFooter(ctx: ExtensionContext) {
-  ctx.ui.setFooter((_tui, theme, footerData) => {
-    return {
+  pi.on("session_start", async (_event, ctx) => {
+    // Initialize thinking level from pi on session start
+    currentThinkingLevel = pi.getThinkingLevel?.() ?? "off";
+    ctx.ui.setFooter((_tui, theme, _footerData) => ({
+      dispose: () => { },
       invalidate() { },
-      dispose() { },
       render(width: number): string[] {
-        // --- Compute token stats ---
-        let totalInput = 0;
-        let totalOutput = 0;
-        let totalCost = 0;
-        for (const entry of ctx.sessionManager.getBranch()) {
-          if (entry.type === "message" && entry.message.role === "assistant") {
-            const m = entry.message as AssistantMessage;
-            totalInput += m.usage.input;
-            totalOutput += m.usage.output;
-            totalCost += m.usage.cost.total;
-          }
-        }
+        const model = ctx.model?.id || "no-model";
+        const thinkingLevel = currentThinkingLevel || "n/a";
+        const usage = ctx.getContextUsage();
+        const pct = (usage && usage.percent !== null) ? usage.percent : 0;
+        const filled = Math.round(pct / 10);
+        const bar = "#".repeat(filled) + "-".repeat(10 - filled);
 
-        const fmt = (n: number) =>
-          n < 1000
-            ? `${n}`
-            : n < 10000
-              ? `${(n / 1000).toFixed(1)}k`
-              : `${Math.round(n / 1000)}k`;
+        // Get and format context window size
+        const contextWindow = ctx.model?.contextWindow ?? usage?.total ?? 0;
+        const formattedContext = fmtContext(contextWindow);
 
-        // Build stats parts
-        const statsParts: string[] = [];
-        statsParts.push(`↑${fmt(totalInput)}`);
-        statsParts.push(`↓${fmt(totalOutput)}`);
+        const left = theme.fg("dim", ` ${model} (${thinkingLevel})`);
+        const right = theme.fg("dim", `[${bar}] ${Math.round(pct)}% (${formattedContext}) `);
+        const pad = " ".repeat(Math.max(1, width - visibleWidth(left) - visibleWidth(right)));
 
-        // Context usage + total cost
-        const contextUsage = ctx.getContextUsage();
-        const percent = contextUsage?.percent ?? null;
-
-        // Format context window size (e.g., 200k, 1M)
-        const fmtContext = (n: number) =>
-          n >= 1000000
-            ? `${(n / 1000000).toFixed(n >= 10000000 ? 0 : 1).replace(/\.0$/, '')}M`
-            : n >= 1000
-              ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, '')}K`
-              : `${n}`;
-
-        const contextWindow = ctx.model?.contextWindow ?? contextUsage?.total ?? 0;
-        const percentDisplay = percent !== null ? `${percent.toFixed(1)}%` : '0%';
-        statsParts.push(`${percentDisplay} (${fmtContext(contextWindow)})`);
-        statsParts.push(`$${totalCost.toFixed(2)}`);
-
-        // Model name with thinking level: "big-pickle(medium)" or "big-pickle"
-        const modelName = ctx.model?.id || "no-model";
-        const displayModel = currentThinkingLevel && currentThinkingLevel !== "off"
-          ? `${modelName} (${currentThinkingLevel})`
-          : modelName;
-
-        // --- Build line: stats (left)  model (right) ---
-        const statsLine = statsParts.join(" | ");
-        const statsWidth = visibleWidth(statsLine);
-        const modelWidth = visibleWidth(displayModel);
-
-        let line: string;
-        if (statsWidth + modelWidth <= width) {
-          const pad = " ".repeat(width - statsWidth - modelWidth);
-          line = statsLine + pad + theme.fg("accent", displayModel);
-        } else {
-          line = statsLine;
-        }
-
-        // --- Build output ---
-        const lines: string[] = [];
-
-        // Line 1: stats + model (right-aligned)
-        lines.push(theme.fg("dim", line));
-
-        // Line 2: extension statuses with | separator
-        const extensionStatuses = footerData.getExtensionStatuses();
-        if (extensionStatuses.size > 0) {
-          const sorted = Array.from(extensionStatuses.entries())
-            .sort(([a], [b]) => a.localeCompare(b))
-            .map(([, text]) => text.replace(/[\r\n\t]/g, " ").replace(/ +/g, " ").trim());
-          const statusLine = sorted.join(" | ");
-          lines.push(truncateToWidth(theme.fg("dim", statusLine), width, "..."));
-        }
-
-        return lines;
+        return [truncateToWidth(left + pad + right, width)];
       },
-    };
+    }));
   });
 }
