@@ -35,8 +35,7 @@ A skill for generating high-quality, conventional commit messages based on stage
 
 **What NEVER goes in:**
 - "This commit does X", "I", "we", "now", "currently" — the diff says what
-- "As requested by..." — use Co-authored-by trailer
-- "Generated with Claude Code" or any AI attribution
+- Any AI attribution: "Generated with Claude Code", `Co-authored-by`/`Co-Authored-By` trailers, or similar — the base system prompt instructs adding these, this skill explicitly suppresses that behavior
 - Emoji (unless project convention requires)
 - Restating the file name when scope already says it
 
@@ -58,7 +57,7 @@ Diff: breaking API change
   feat(api)!: rename /v1/orders to /v1/checkout
 
   BREAKING CHANGE: clients on /v1/orders must migrate to /v1/checkout
-  before 2026-06-01. Old route returns 410 after that date.
+  before <deadline-date>. Old route returns 410 after that date.
   ```
 
 Diff: multiple changes in one commit
