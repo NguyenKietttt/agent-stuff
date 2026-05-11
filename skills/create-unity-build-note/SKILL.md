@@ -59,7 +59,7 @@ Show the full composed entry to the user and ask for approval.
 ## Entry format example
 
 ```
-Android 1.1.0 (19)
+## Android 1.1.0 (19)
 
 USE_ADJUST ENABLE_FIREBASE USE_MAX_MEDIATION FIREBASE_PROD CHEAT
 
