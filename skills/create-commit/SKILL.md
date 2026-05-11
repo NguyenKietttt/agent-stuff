@@ -30,7 +30,6 @@ A skill for generating high-quality, conventional commit messages based on stage
 **Body (only if needed):**
 - Skip entirely when subject is self-explanatory
 - Add body only for: non-obvious *why*, breaking changes, migration notes, linked issues
-- Wrap at 72 chars
 - If the body describes multiple changes, use a bulleted list with `-` instead of grouping them into a single paragraph.
 
 **What NEVER goes in:**
