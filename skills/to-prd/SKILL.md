@@ -15,6 +15,8 @@ A deep module (as opposed to a shallow module) is one which encapsulates a lot o
 
 Check with the user that these modules match their expectations. Check with the user which modules they want manual tests created for.
 
+Wait for the confirmation from the user before proceeding to the next step. Never proceed without confirmation from the user.
+
 3. Write the PRD using the template below and save it to .agents/prd/<concise-description-of-prd>/<PRD>.md
 
 <prd-template>
@@ -51,7 +53,7 @@ A list of implementation decisions that were made. This can include:
 - API contracts
 - Specific interactions
 
-Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
+NEVER include specific file paths or code snippets. They may end up being outdated very quickly.
 
 ## Testing Decisions
 
