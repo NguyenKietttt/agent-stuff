@@ -49,7 +49,9 @@ Iterate until the user approves the breakdown.
 
 ### 5. Create the issues
 
-For each approved slice, write an issue and save it to ./agents/prd/<folder-contain-prd>/issues/ISSUE_<ISSUE-NUMBER>.md. Use the issue body template below.
+For each approved slice, write an issue and save it to `./agents/prd/<folder-contain-prd>/issues/ISSUE_<N>.md`. Use the issue body template below.
+
+**Issue number format:** use sequential integers starting from 1 without zero-padding — `ISSUE_1`, `ISSUE_2`, `ISSUE_3`, etc. (not `ISSUE_001`, `ISSUE_01`).
 
 Create issues in dependency order (blockers first) so you can reference real issue numbers in the "Blocked by" field.
 
@@ -80,7 +82,7 @@ Describe the manual testing steps to verify this slice works correctly:
 
 ## Blocked by
 
-- Blocked by [ISSUE_<ISSUE-NUMBER>](./ISSUE_<ISSUE-NUMBER>.md) (if any)
+- Blocked by [ISSUE_<N>](./ISSUE_<N>.md) (if any)
 
 Or "None - can start immediately" if no blockers.
 
