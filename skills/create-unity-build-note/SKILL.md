@@ -1,6 +1,6 @@
 ---
 name: create-unity-build-note
-description: Generates a formatted build note entry for BUILD_NOTES.md in a Unity project. Reads version, build number, and scripting defines from ProjectSettings/ProjectSettings.asset, condenses new git commits into clean bullet points using AI, previews the entry, and prepends it to BUILD_NOTES.md upon user approval. Use when the user wants to document a new build, create release notes, update BUILD_NOTES.md, or generate a Unity build changelog.
+description: Generates a formatted build note entry for docs/build-notes.md in a Unity project. Reads version, build number, and scripting defines from ProjectSettings/ProjectSettings.asset, condenses new git commits into clean bullet points using AI, previews the entry, and prepends it to docs/build-notes.md upon user approval. Use when the user wants to document a new build, create release notes, update build-notes.md, or generate a Unity build changelog.
 ---
 
 # Create Unity Build Note
@@ -13,11 +13,11 @@ Run from the repo root. The skill asks for platform, reads project settings, sum
 
 **1. Ask platform** — prompt the user: `"Which platform? (Android / iOS)"`
 
-**2. Check BUILD_NOTES.md** at repo root:
+**2. Check build-notes.md** at `docs/build-notes.md`:
 - Doesn't exist → create empty file, set `range_start` = first commit (`git rev-list --max-parents=0 HEAD`)
 - Exists and empty → set `range_start` = first commit
 - Has entries → find the last footer line matching `(<hash1> - <hash2>)`, set `range_start = hash2`
-  - No valid footer found → warn the user and **exit** (do not continue)
+- No valid footer found → warn the user and **exit** (do not continue)
 
 **3. Get commit range**
 - `range_end` = `git rev-parse HEAD`
@@ -51,10 +51,10 @@ Feed the raw commit messages to Claude with this instruction:
 
 **7. Preview and confirm**
 Show the full composed entry to the user and ask for approval.
-- Approved → prepend the entry to `BUILD_NOTES.md`, followed by a blank line before existing content
+- Approved → prepend the entry to `docs/build-notes.md`, followed by a blank line before existing content
 - Not approved → ask what to change, adjust, and re-preview
 
-**Never write to BUILD_NOTES.md without explicit user approval.**
+**Never write to build-notes.md without explicit user approval.**
 
 ## Entry format example
 
