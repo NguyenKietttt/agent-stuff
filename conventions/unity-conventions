@@ -1,5 +1,0 @@
-# Unity Conventions
-
-## Declarations
-
-- Never use null propagation (`?.`, `??`, `??=`) on Unity objects (`MonoBehaviour`, `ScriptableObject`, `Component`, etc.)
