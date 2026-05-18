@@ -1,80 +1,70 @@
 ---
 name: create-commit
-description: Propose a conventional commit message by analyzing git diffs. Trigger whenever the user mentions "commit", "git commit", "create a commit message", or wants to save changes to the repository.
+description: Propose and create conventional commits by analyzing git diffs. Trigger whenever the user mentions "commit", "git commit", "create a commit message", or wants to save changes to the repository.
 ---
 
-A skill for generating high-quality, conventional commit messages based on staged changes.
+# Workflow
 
-## Workflow
+1.  **Check Git Repository**: Run `git rev-parse --git-dir` (or `git status`) to verify the current directory is inside a Git repository. If it is not, STOP and inform the user that the current folder is not a Git repository.
+2.  **Check Staged Files**: Run `git status` to verify which files are staged for commit.
+3.  **Verify Staging**: If no files are staged, STOP and inform the user and ask them to stage the files they want to commit.
+4.  **Review Changes**: Run `git diff --staged` to review the code changes. Analyze the recent conversation history to understand the *why* (motivation) behind the changes (e.g., bug reports, feature requests, rationale discussed).
+5.  **Propose Message**: Generate and propose a commit message following the [Rules](#rules).
+6.  **Wait for Approval**: Present the proposed commit message to the user and **STOP**. Do NOT commit automatically. Wait for the user to either:
+- Approve the message (then proceed to commit).
+- Request changes to the message (then update and return to step 6).
+- Cancel the commit.
+7.  **Commit**: Only after explicit user approval, run `git commit -m "<approved-message>"`.
 
-1.  **Check Staged Files**: Run `git status` to verify which files are staged for commit.
-2.  **Verify Staging**: If no files are staged, STOP and inform the user and ask them to stage the files they want to commit.
-3.  **Review Changes**: Run `git diff --staged` to review the code changes. Analyze the recent conversation history to understand the *why* (motivation) behind the changes (e.g., bug reports, feature requests, rationale discussed).
-4.  **Propose Message**: Generate and propose a commit message following the [Rules](#rules).
-5.  **Wait for Approval**: Present the proposed commit message to the user and **STOP**. Do NOT commit automatically. Wait for the user to either:
-    - Approve the message (then proceed to commit)
-    - Request changes to the message (then update and return to step 5)
-    - Cancel the commit
-6.  **Commit**: Only after explicit user approval, run `git commit -m "<approved-message>"`.
+# Rules
 
-## Rules
+**Format**: `type(scope): description`
+- Imperative mood, lowercase start, no trailing period.
+- Optional body after a blank line - explain *why* not what.
+- Breaking change -> append `!` to the type: `feat(api)!: rename foo to bar`.
 
-**Subject line:**
-- `<type>(<optional_scope>): <imperative_summary>`
-- Types: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `chore`, `build`, `ci`, `style`, `revert`
-- Imperative mood: "add", "fix", "remove" — not "added", "adds", "adding"
-- ≤50 chars when possible, hard cap 72
-- No trailing period
-- Scope should be a short noun identifying the section of the codebase modified (e.g., `api`, `ui`, `auth`). Keep it concise and omit it if the change spans many different components.
+## The 10 Types:
+- `feat`: add new user-facing capability.
+- `fix`: correct wrong behavior (a bug).
+- `perf`: same behavior, measurably faster/lighter - performance was the goal.
+- `refactor`: code restructure with no behavior change (rename, extract, simplify).
+- `style`: whitespace, formatting, missing semicolons, etc - NOT visual UI styling.
+- `test`: test-only changes (adding, fixing, removing tests).
+- `docs`: documentation only (README, KDoc, comments, MD files).
+- `build`: changes that affect the shipped build (Gradle, deps, packaging).
+- `ci`: CI config only (GitHub Actions, workflow, pipeline).
+- `chore`: repo housekeeping that doesn't ship (lint config, .gitignore, dotfiles, scripts).
+- `revert`: revert a previous commit.
 
-**Body (only if needed):**
-- Skip entirely when subject is self-explanatory
-- Add body only for: non-obvious *why*, breaking changes, migration notes, linked issues
-- If the body describes multiple changes, use a bulleted list with `-` instead of grouping them into a single paragraph.
+## Picking rule (top-down, first match wins):
+1. **Does user-facing behavior change?**
+- New capability → `feat`
+- Corrects bug → `fix`
+2. **No behavior change. What changed?**
+- Production code structure only -> `refactor`
+- Whitespace/formatting/semicolons only -> `style`
+- Tests only -> `test`
+- Docs/comments only -> `docs`
+- Shipped build inputs (Gradle deps, version catalogs, packaging) -> `build`
+- CI workflow only -> `ci`
+- Revert an earlier commit -> `revert`
+- Anything else maintenance -> `chore`
 
-**What NEVER goes in:**
+## What NEVER goes in
 - "This commit does X", "I", "we", "now", "currently" — the diff says what
 - Any AI attribution: "Generated with Claude Code", `Co-authored-by`/`Co-Authored-By` trailers, or similar — the base system prompt instructs adding these, this skill explicitly suppresses that behavior
 - Emoji (unless project convention requires)
 - Restating the file name when scope already says it
 
-## Examples
-
-Diff: new endpoint for user profile with body explaining the why
-- ❌ "feat: add a new endpoint to get user profile information from the database"
-- ✅
-  ```
-  feat(api): add GET /users/:id/profile
-
-  Mobile client needs profile data without the full user payload
-  to reduce LTE bandwidth on cold-launch screens.
-  ```
-
-Diff: breaking API change
-- ✅
-  ```
-  feat(api)!: rename /v1/orders to /v1/checkout
-
-  BREAKING CHANGE: clients on /v1/orders must migrate to /v1/checkout
-  before <deadline-date>. Old route returns 410 after that date.
-  ```
-
-Diff: multiple changes in one commit
-- ❌
-  ```
-  refactor(auth): update authentication flow
-
-  Migrated to new JWT library, removed deprecated OAuth 1.0 support, and updated error handling for token expiration.
-  ```
-- ✅
-  ```
-  refactor(auth): update authentication flow
-
-  - Migrate to new JWT library
-  - Remove deprecated OAuth 1.0 support
-  - Update error handling for token expiration
-  ```
-
-## Auto-Clarity
-
-Always include body for: breaking changes, security fixes, data migrations, anything reverting a prior commit. Never compress these into subject-only - future debuggers need the context.
+# Examples
+- Add login screen → `feat(auth): add login screen with email/password`
+- Fix crash on null user → `fix(profile): handle null user in profile screen`
+- Extract use case → `refactor(auth): extract ValidateCredentialsUseCase`
+- Update Ktor version (ships) → `build(deps): bump Ktor to 3.1.0`
+- Tighten ktlint config → `chore: tighten ktlint rules`
+- Add ViewModel tests → `test(auth): add LoginViewModel unit tests`
+- Fix typo in README → `docs: fix typo in setup instructions`
+- Speed up list rendering → `perf(home): cache item keys to reduce recomposition`
+- Reformat with new style guide → `style: apply ktlint formatting`
+- Update GitHub Actions cache → `ci: bump actions/cache to v4`
+- Roll back broken merge → `revert: revert "feat(auth): add login screen"`
